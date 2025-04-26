@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .container {
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stopwatch {
+      position: relative;
+    }
+
+    .half-circle {
+      position: relative;
+      width: 220px;
+      height: 110px;
+      background: linear-gradient(to top right, #ff7e5f, #feb47b);
+      border-radius: 200px 200px 0 0;
+      margin: 0 auto;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .time {
+      font-size: 4em;
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .controls {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    button {
+      padding: 15px 25px;
+      font-size: 18px;
+      background-color: #ff7e5f;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    button:hover {
+      background-color: #feb47b;
+      transform: scale(1.1);
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    #lapTimes {
+      margin-top: 20px;
+      font-size: 18px;
+      color: white;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: scroll;
+    }
+
+    #lapTimes ul {
+      list-style-type: none;
+    }
+
+    #lapTimes li {
+      background-color: rgba(255, 255, 255, 0.1);
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 30px;
+      }
+
+      .time {
+        font-size: 2.5em;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="stopwatch">
+      <div class="half-circle">
+        <div class="time" id="time">00:00</div>
+      </div>
+      <div class="controls">
+        <button id="startStopBtn">Start</button>
+        <button id="resetBtn">Reset</button>
+        <button id="lapBtn">Lap</button>
+      </div>
+      <div id="lapTimes"></div>
+    </div>
+  </div>
+
+  <script>
+    let timer;
+    let isRunning = false;
+    let seconds = 0;
+    let minutes = 0;
+    let lapTimes = [];
+
+    const timeDisplay = document.getElementById('time');
+    const startStopBtn = document.getElementById('startStopBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const lapBtn = document.getElementById('lapBtn');
+    const lapTimesDiv = document.getElementById('lapTimes');
+
+    function formatTime() {
+      return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function updateTime() {
+      seconds++;
+      if (seconds === 60) {
+        seconds = 0;
+        minutes++;
+      }
+      timeDisplay.textContent = formatTime();
+    }
+
+    startStopBtn.addEventListener('click', () => {
+      if (isRunning) {
+        clearInterval(timer);
+        startStopBtn.textContent = 'Start';
+      } else {
+        timer = setInterval(updateTime, 1000);
+        startStopBtn.textContent = 'Pause';
+      }
+      isRunning = !isRunning;
+    });
+
+    resetBtn.addEventListener('click', () => {
+      clearInterval(timer);
+      isRunning = false;
+      seconds = 0;
+      minutes = 0;
+      timeDisplay.textContent = '00:00';
+      startStopBtn.textContent = 'Start';
+    });
+
+    lapBtn.addEventListener('click', () => {
+      if (isRunning) {
+        const lapTime = formatTime();
+        lapTimes.push(lapTime);
+        lapTimesDiv.innerHTML = `<h3>Lap Times:</h3><ul>${lapTimes.map(lap => `<li>${lap}</li>`).join('')}</ul>`;
+      }
+    });
+  </script>
+</body>
+</html>
